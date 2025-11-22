@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AATO Framework - Simulasi Interaktif</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e3a8a;
+            --secondary: #0e9f6e;
+            --accent: #3f83f8;
+            --light: #f8fafc;
+            --dark: #1f2937;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .main-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--gray);
+            max-width: 800px;
+            margin: 0 auto 20px;
+        }
+
+        /* Simulation Section */
+        .simulation-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Upload Area */
+        .upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .upload-area {
+            width: 100%;
+            max-width: 600px;
+            border: 3px dashed var(--primary);
+            border-radius: 15px;
+            padding: 50px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(26, 86, 219, 0.05);
+        }
+
+        .upload-area:hover {
+            background: rgba(26, 86, 219, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+
+        .upload-subtext {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        .file-info {
+            display: none;
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        .file-info.active {
+            display: block;
+        }
+
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+
+        .file-details {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Process Visualization */
+        .process-visualization {
+            display: none;
+            margin-top: 40px;
+        }
+
+        .process-visualization.active {
+            display: block;
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--light-gray);
+            z-index: 1;
+        }
+
+        .process-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .step-indicator {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .process-step.active .step-indicator {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .process-step.completed .step-indicator {
+            background: var(--success);
+            color: white;
+        }
+
+        .step-label {
+            font-weight: 600;
+            color: var(--dark);
+            text-align: center;
+        }
+
+        .process-step.active .step-label {
+            color: var(--primary);
+        }
+
+        /* Process Content */
+        .process-content {
+            display: none;
+            background: var(--light);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .process-content.active {
+            display: block;
+        }
+
+        .process-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Data Integration Visualization */
+        .data-integration-viz {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .data-source {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .data-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .data-name {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .data-status {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .data-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: var(--primary);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* AI Processing Visualization */
+        .ai-processing-viz {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .ai-model {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .model-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(26, 86, 219, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .model-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .model-algorithm {
+            background: rgba(26, 86, 219, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .model-features {
+            list-style: none;
+        }
+
+        .model-features li {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .model-features li::before {
+            content: "•";
+            position: absolute;
+            left: 10px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .training-progress {
+            margin-top: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: var(--light-gray);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 2s ease;
+        }
+
+        /* Risk Scoring Visualization */
+        .risk-scoring-viz {
+            display: flex;
+            gap: 30px;
+        }
+
+        .risk-matrix {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .matrix-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .matrix-factors {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .factor {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .factor-weight {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .factor-name {
+            font-weight: 600;
+        }
+
+        .risk-result {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .risk-score {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .risk-category {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .risk-high { color: var(--danger); }
+        .risk-medium { color: var(--warning); }
+        .risk-low { color: var(--success); }
+
+        .risk-description {
+            text-align: center;
+            color: var(--gray);
+        }
+
+        /* Action Visualization */
+        .action-viz {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .action-high .action-icon { background: var(--danger); }
+        .action-medium .action-icon { background: var(--warning); }
+        .action-low .action-icon { background: var(--success); }
+
+        .action-content {
+            flex: 1;
+        }
+
+        .action-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .action-description {
+            color: var(--gray);
+        }
+
+        /* Control Buttons */
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .control-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        .control-btn:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .data-integration-viz, .risk-scoring-viz {
+                flex-direction: column;
+            }
+            
+            .matrix-factors {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .process-steps {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .process-steps::before {
+                display: none;
+            }
+            
+            .process-step {
+                flex-direction: row;
+                gap: 20px;
+            }
+            
+            .step-indicator {
+                margin-bottom: 0;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER SECTION -->
+        <header class="header">
+            <h1 class="main-title">AATO FRAMEWORK</h1>
+            <p class="subtitle">Simulasi Interaktif - Upload Dokumen & Proses Deteksi Anomali AI</p>
+        </header>
+
+        <!-- SIMULATION SECTION -->
+        <section class="simulation-section">
+            <h2 class="section-title">
+                <i class="fas fa-play-circle"></i> Simulasi Interaktif
+            </h2>
+            
+            <!-- Upload Area -->
+            <div class="upload-container">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">Upload Dokumen Pajak</div>
+                    <div class="upload-subtext">Seret file atau klik untuk mengunggah (PDF, Excel, CSV)</div>
+                    <button class="upload-btn">
+                        <i class="fas fa-file-upload"></i> Pilih File
+                    </button>
+                    <input type="file" id="fileInput" accept=".pdf,.xlsx,.xls,.csv" style="display: none;">
+                </div>
+                
+                <div class="file-info" id="fileInfo">
+                    <div class="file-name" id="fileName">Nama File</div>
+                    <div class="file-details" id="fileDetails">Detail file akan muncul di sini</div>
+                </div>
+            </div>
+            
+            <!-- Process Visualization -->
+            <div class="process-visualization" id="processViz">
+                <!-- Process Steps -->
+                <div class="process-steps">
+                    <div class="process-step active" id="step1">
+                        <div class="step-indicator">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="step-label">Integrasi Data</div>
+                    </div>
+                    <div class="process-step" id="step2">
+                        <div class="step-indicator">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="step-label">Pemrosesan AI</div>
+                    </div>
+                    <div class="process-step" id="step3">
+                        <div class="step-indicator">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="step-label">Penilaian Risiko</div>
+                    </div>
+                    <div class="process-step" id="step4">
+                        <div class="step-indicator">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <div class="step-label">Tindakan Tertarget</div>
+                    </div>
+                </div>
+                
+                <!-- Process Content -->
+                <div class="process-content active" id="content1">
+                    <h3 class="process-title">
+                        <i class="fas fa-database"></i> Integrasi Data
+                    </h3>
+                    <p>Mengumpulkan dan memproses data dari berbagai sumber untuk analisis terpadu.</p>
+                    
+                    <div class="data-integration-viz">
+                        <div class="data-source">
+                            <div class="data-icon">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <div class="data-name">e-Faktur</div>
+                            <div class="data-status">Data transaksi real-time</div>
+                        </div>
+                        
+                        <div class="data-flow">
+                            <div class="flow-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="data-source">
+                            <div class="data-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="data-name">SPT</div>
+                            <div class="data-status">Laporan pajak terpusat</div>
+                        </div>
+                        
+                        <div class="data-flow">
+                            <div class="flow-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="data-source">
+                            <div class="data-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="data-name">Laporan Keuangan</div>
+                            <div class="data-status">Data finansial perusahaan</div>
+                        </div>
+                    </div>
+                    
+                    <div class="data-flow" style="justify-content: center; margin-top: 30px;">
+                        <div class="flow-arrow">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="data-source" style="max-width: 400px; margin: 0 auto;">
+                        <div class="data-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="data-name">Database Terpusat</div>
+                        <div class="data-status">Pemrosesan 1 juta transaksi/menit</div>
+                    </div>
+                </div>
+                
+                <div class="process-content" id="content2">
+                    <h3 class="process-title">
+                        <i class="fas fa-brain"></i> Pemrosesan AI
+                    </h3>
+                    <p>Menganalisis data dengan algoritma canggih untuk mengidentifikasi pola anomali.</p>
+                    
+                    <div class="ai-processing-viz">
+                        <div class="ai-model">
+                            <div class="model-header">
+                                <div class="model-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <div class="model-title">Pattern Analysis</div>
+                            </div>
+                            <div class="model-algorithm">Isolation Forest Algorithm</div>
+                            <ul class="model-features">
+                                <li>Deteksi outlier nilai transaksi</li>
+                                <li>Threshold: Deviasi >300% dari normal</li>
+                                <li>Akurasi: 85% dalam identifikasi transaksi mencurigakan</li>
+                            </ul>
+                            <div class="training-progress">
+                                <div class="progress-label">
+                                    <span>Training Progress</span>
+                                    <span id="patternProgress">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="patternBar"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-model">
+                            <div class="model-header">
+                                <div class="model-icon">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <div class="model-title">Ratio Analysis</div>
+                            </div>
+                            <div class="model-algorithm">Neural Network</div>
+                            <ul class="model-features">
+                                <li>Analisis rasio PPN Keluaran/Masukan</li>
+                                <li>Deteksi deviasi >50% dari standar industri</li>
+                                <li>Multi-dimensional ratio analysis</li>
+                            </ul>
+                            <div class="training-progress">
+                                <div class="progress-label">
+                                    <span>Training Progress</span>
+                                    <span id="ratioProgress">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="ratioBar"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-model">
+                            <div class="model-header">
+                                <div class="model-icon">
+                                    <i class="fas fa-project-diagram"></i>
+                                </div>
+                                <div class="model-title">Network Analysis</div>
+                            </div>
+                            <div class="model-algorithm">Graph Theory</div>
+                            <ul class="model-features">
+                                <li>Mapping hubungan transaksi antar entitas</li>
+                                <li>Deteksi round-tripping patterns</li>
+                                <li>Network risk scoring</li>
+                            </ul>
+                            <div class="training-progress">
+                                <div class="progress-label">
+                                    <span>Training Progress</span>
+                                    <span id="networkProgress">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="networkBar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="process-content" id="content3">
+                    <h3 class="process-title">
+                        <i class="fas fa-balance-scale"></i> Penilaian Risiko
+                    </h3>
+                    <p>Menghitung skor risiko multidimensi untuk mengklasifikasikan wajib pajak.</p>
+                    
+                    <div class="risk-scoring-viz">
+                        <div class="risk-matrix">
+                            <div class="matrix-title">Matriks Penilaian Risiko</div>
+                            <div class="matrix-factors">
+                                <div class="factor">
+                                    <div class="factor-weight">40%</div>
+                                    <div class="factor-name">Kepatuhan Historis</div>
+                                </div>
+                                <div class="factor">
+                                    <div class="factor-weight">30%</div>
+                                    <div class="factor-name">Pola Transaksi</div>
+                                </div>
+                                <div class="factor">
+                                    <div class="factor-weight">20%</div>
+                                    <div class="factor-name">Benchmark Industri</div>
+                                </div>
+                                <div class="factor">
+                                    <div class="factor-weight">10%</div>
+                                    <div class="factor-name">Analisis Perilaku</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="risk-result">
+                            <div class="risk-score" id="riskScore">0</div>
+                            <div class="risk-category risk-medium" id="riskCategory">-</div>
+                            <div class="risk-description" id="riskDescription">
+                                Skor risiko akan dihitung berdasarkan analisis data
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="process-content" id="content4">
+                    <h3 class="process-title">
+                        <i class="fas fa-bullseye"></i> Tindakan Tertarget
+                    </h3>
+                    <p>Mengarahkan respons yang sesuai berdasarkan tingkat risiko yang teridentifikasi.</p>
+                    
+                    <div class="action-viz">
+                        <div class="action-card action-high">
+                            <div class="action-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="action-content">
+                                <div class="action-title">Risiko Tinggi</div>
+                                <div class="action-description">Audit langsung & investigasi mendalam untuk korporasi besar dengan indikator merah</div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-card action-medium">
+                            <div class="action-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="action-content">
+                                <div class="action-title">Risiko Sedang</div>
+                                <div class="action-description">Tindakan preventif, notifikasi, dan pemantauan untuk perusahaan menengah</div>
+                            </div>
+                        </div>
+                        
+                        <div class="action-card action-low">
+                            <div class="action-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="action-content">
+                                <div class="action-title">Risiko Rendah</div>
+                                <div class="action-description">Proses jalur hijau dan simplified compliance untuk UMKM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Control Buttons -->
+                <div class="control-buttons">
+                    <button class="control-btn" id="prevBtn" disabled>
+                        <i class="fas fa-arrow-left"></i> Sebelumnya
+                    </button>
+                    <button class="control-btn" id="nextBtn">
+                        <i class="fas fa-arrow-right"></i> Lanjutkan
+                    </button>
+                    <button class="control-btn" id="restartBtn">
+                        <i class="fas fa-redo"></i> Mulai Ulang
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <p><strong>AATO Framework</strong> - Sistem Deteksi Anomali PPN Terintegrasi</p>
+            <p style="margin-top: 10px;">Simulasi Interaktif Upload Dokumen & Proses AI</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileDetails = document.getElementById('fileDetails');
+        const processViz = document.getElementById('processViz');
+        const steps = document.querySelectorAll('.process-step');
+        const contents = document.querySelectorAll('.process-content');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        
+        // Progress bars
+        const patternBar = document.getElementById('patternBar');
+        const patternProgress = document.getElementById('patternProgress');
+        const ratioBar = document.getElementById('ratioBar');
+        const ratioProgress = document.getElementById('ratioProgress');
+        const networkBar = document.getElementById('networkBar');
+        const networkProgress = document.getElementById('networkProgress');
+        
+        // Risk elements
+        const riskScore = document.getElementById('riskScore');
+        const riskCategory = document.getElementById('riskCategory');
+        const riskDescription = document.getElementById('riskDescription');
+        
+        // Simulation state
+        let currentStep = 0;
+        let fileUploaded = false;
+        
+        // Initialize simulation
+        function initSimulation() {
+            currentStep = 0;
+            fileUploaded = false;
+            processViz.classList.remove('active');
+            fileInfo.classList.remove('active');
+            updateSteps();
+            updateButtons();
+            resetProgressBars();
+            resetRiskScore();
+        }
+        
+        // Update step indicators
+        function updateSteps() {
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index === currentStep) {
+                    step.classList.add('active');
+                } else if (index < currentStep) {
+                    step.classList.add('completed');
+                }
+            });
+            
+            contents.forEach((content, index) => {
+                content.classList.remove('active');
+                if (index === currentStep) {
+                    content.classList.add('active');
+                }
+            });
+        }
+        
+        // Update button states
+        function updateButtons() {
+            prevBtn.disabled = currentStep === 0;
+            nextBtn.disabled = currentStep === steps.length - 1;
+            
+            if (currentStep === steps.length - 1) {
+                nextBtn.innerHTML = '<i class="fas fa-check"></i> Selesai';
+            } else {
+                nextBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Lanjutkan';
+            }
+        }
+        
+        // Reset progress bars
+        function resetProgressBars() {
+            patternBar.style.width = '0%';
+            patternProgress.textContent = '0%';
+            ratioBar.style.width = '0%';
+            ratioProgress.textContent = '0%';
+            networkBar.style.width = '0%';
+            networkProgress.textContent = '0%';
+        }
+        
+        // Reset risk score
+        function resetRiskScore() {
+            riskScore.textContent = '0';
+            riskCategory.textContent = '-';
+            riskCategory.className = 'risk-category risk-medium';
+            riskDescription.textContent = 'Skor risiko akan dihitung berdasarkan analisis data';
+        }
+        
+        // Animate progress bars
+        function animateProgressBars() {
+            // Pattern Analysis
+            setTimeout(() => {
+                patternBar.style.width = '85%';
+                patternProgress.textContent = '85%';
+            }, 500);
+            
+            // Ratio Analysis
+            setTimeout(() => {
+                ratioBar.style.width = '92%';
+                ratioProgress.textContent = '92%';
+            }, 1500);
+            
+            // Network Analysis
+            setTimeout(() => {
+                networkBar.style.width = '78%';
+                networkProgress.textContent = '78%';
+            }, 2500);
+            
+            // Update risk score after AI processing
+            setTimeout(() => {
+                const score = Math.floor(Math.random() * 40) + 30; // Random score between 30-70
+                riskScore.textContent = score;
+                
+                if (score < 40) {
+                    riskCategory.textContent = 'RISIKO TINGGI';
+                    riskCategory.className = 'risk-category risk-high';
+                    riskDescription.textContent = 'Diperlukan audit langsung dan investigasi mendalam';
+                } else if (score < 70) {
+                    riskCategory.textContent = 'RISIKO SEDANG';
+                    riskCategory.className = 'risk-category risk-medium';
+                    riskDescription.textContent = 'Disarankan notifikasi preventif dan pemantauan berkala';
+                } else {
+                    riskCategory.textContent = 'RISIKO RENDAH';
+                    riskCategory.className = 'risk-category risk-low';
+                    riskDescription.textContent = 'Dapat diproses melalui jalur hijau dengan simplified compliance';
+                }
+            }, 3500);
+        }
+        
+        // Event Listeners
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                fileName.textContent = file.name;
+                fileDetails.textContent = `Tipe: ${file.type || 'Tidak diketahui'} | Ukuran: ${(file.size / 1024).toFixed(2)} KB`;
+                fileInfo.classList.add('active');
+                processViz.classList.add('active');
+                fileUploaded = true;
+                
+                // Auto-advance to first step after upload
+                currentStep = 0;
+                updateSteps();
+                updateButtons();
+            }
+        });
+        
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = 'rgba(26, 86, 219, 0.15)';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.backgroundColor = 'rgba(26, 86, 219, 0.05)';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = 'rgba(26, 86, 219, 0.05)';
+            
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        });
+        
+        // Navigation buttons
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                updateSteps();
+                updateButtons();
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                updateSteps();
+                updateButtons();
+                
+                // Start AI processing animation when reaching step 2
+                if (currentStep === 2) {
+                    animateProgressBars();
+                }
+            } else {
+                // Simulation completed
+                alert('Simulasi selesai! Proses deteksi anomali AATO Framework telah berhasil dijalankan.');
+            }
+        });
+        
+        restartBtn.addEventListener('click', initSimulation);
+        
+        // Initialize simulation on page load
+        document.addEventListener('DOMContentLoaded', initSimulation);
+    </script>
+</body>
+</html>
